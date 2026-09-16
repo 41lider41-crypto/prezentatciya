@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Питч на 6 слайдах — рабочая тетрадь</title>
+<style>
+:root{
+  --bg:#F4F7F9; --surface:#FFFFFF; --surface-alt:#DEEAF1; --text:#1B2733; --text-muted:#586675; --border:#D7E1E8;
+  --navy:#1F4E79; --navy-deep:#153454; --orange:#C55A11; --orange-soft:#F4DDC8; --danger:#B23A2E; --ok:#2E7D46;
+  --footer:#6B7680; --radius:12px; --shadow:0 1px 2px rgba(15,35,55,.06),0 6px 20px rgba(15,35,55,.07);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E161F; --surface:#17212C; --surface-alt:#1E2E3D; --text:#E7EEF3; --text-muted:#93A4B2; --border:#28394A;
+    --navy:#7FB2E0; --navy-deep:#4C86B8; --orange:#FF9E52; --orange-soft:#3A2A1C; --danger:#FF6B5E; --ok:#57C77E;
+    --footer:#8494A2; --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E161F; --surface:#17212C; --surface-alt:#1E2E3D; --text:#E7EEF3; --text-muted:#93A4B2; --border:#28394A;
+  --navy:#7FB2E0; --navy-deep:#4C86B8; --orange:#FF9E52; --orange-soft:#3A2A1C; --danger:#FF6B5E; --ok:#57C77E;
+  --footer:#8494A2; --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif;line-height:1.45}
+:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+img,svg{max-width:100%}
+.app{max-width:1100px;margin:0 auto;padding:1.2rem 1.2rem 3rem}
+a{color:var(--navy)}
+
+/* header */
+.app-header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem;
+  padding:1rem 1.3rem;background:var(--navy);color:#fff;border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:1rem}
+.app-header h1{font-size:1.15rem;margin:0 0 .15rem;font-weight:800}
+.app-header .src{font-size:.8rem;opacity:.85;margin:0}
+.header-right{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap}
+.progress-wrap{display:flex;align-items:center;gap:.5rem;font-size:.8rem;opacity:.95}
+.progress-bar{width:110px;height:8px;background:rgba(255,255,255,.25);border-radius:99px;overflow:hidden}
+.progress-bar>span{display:block;height:100%;background:var(--orange);border-radius:99px}
+.btn{border:none;border-radius:8px;padding:.5rem .9rem;font-size:.85rem;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-orange{background:var(--orange);color:#fff}
+.btn-orange:hover{background:#A94C0C}
+.btn-ghost{background:rgba(255,255,255,.14);color:#fff}
+.btn-ghost:hover{background:rgba(255,255,255,.24)}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
+.btn-outline:hover{border-color:var(--navy);color:var(--navy)}
+.btn-danger-outline{background:transparent;border:1px solid var(--danger);color:var(--danger)}
+
+/* tabs */
+.tabs{display:flex;gap:.35rem;overflow-x:auto;padding:.2rem 0 1rem;scrollbar-width:thin}
+.tab{flex:0 0 auto;border:1px solid var(--border);background:var(--surface);color:var(--text-muted);
+  padding:.4rem .8rem;border-radius:99px;font-size:.8rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit}
+.tab.active{background:var(--navy);border-color:var(--navy);color:#fff}
+.tab .n{opacity:.6;margin-right:.3em}
+
+/* steps */
+.step{display:none}
+.step.active{display:block;animation:fade .18s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.4rem;box-shadow:var(--shadow)}
+.card h2{margin-top:0;color:var(--navy);font-size:1.25rem}
+.card h2 .step-num{color:var(--orange)}
+.lead{color:var(--text-muted);font-size:.95rem;max-width:60ch}
+
+.hintbox{border-left:3px solid var(--orange);background:var(--surface-alt);padding:.75rem 1rem;
+  border-radius:0 8px 8px 0;font-size:.88rem;margin:1rem 0 1.2rem;display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.hintbox .yes b, .hintbox .no b{color:var(--navy);display:block;margin-bottom:.2rem}
+.hintbox .no{color:var(--text-muted)}
+@media(max-width:600px){.hintbox{grid-template-columns:1fr}}
+
+.editor-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:1.6rem;margin-top:1rem}
+@media(max-width:860px){.editor-grid{grid-template-columns:1fr}}
+
+.field{margin-bottom:1rem}
+.field label{display:block;font-weight:700;margin-bottom:.3rem;color:var(--navy);font-size:.9rem}
+.field .opt{font-weight:400;color:var(--text-muted);font-size:.8rem}
+.field input[type=text],.field textarea{width:100%;padding:.6rem .7rem;border:1px solid var(--border);
+  border-radius:8px;font-family:inherit;font-size:.95rem;background:var(--surface);color:var(--text)}
+.field textarea{resize:vertical;min-height:4.2em}
+.field .counter{font-size:.78rem;color:var(--text-muted);text-align:right;margin-top:.2rem}
+.field .counter.warn{color:var(--danger);font-weight:700}
+.warn-line{font-size:.8rem;color:var(--danger);font-weight:700;margin-top:-.6rem;margin-bottom:1rem}
+.warn-line[hidden]{display:none}
+.checkline{display:flex;align-items:flex-start;gap:.5rem;font-size:.88rem;margin-bottom:.5rem}
+.checkline input{margin-top:.2rem}
+.pair{display:grid;grid-template-columns:1fr 1.3fr;gap:.5rem}
+@media(max-width:500px){.pair{grid-template-columns:1fr}}
+
+/* slide mockup */
+.preview-col{position:sticky;top:1rem;align-self:start}
+.mockup-caption{font-size:.78rem;color:var(--text-muted);margin:.5rem 0 0;text-align:center}
+.slide-mockup{aspect-ratio:16/9;background:#0B1524;color:#F5F7FA;--pv-accent:#FF8A3D;
+  border-radius:12px;padding:1.5em;display:flex;flex-direction:column;justify-content:center;
+  position:relative;overflow:hidden;font-size:10px;box-shadow:var(--shadow)}
+.slide-mockup.light{background:#FFFFFF;color:#101820;--pv-accent:#C55A11;border:1px solid #E2E8EC}
+.slide-mockup .mock-eyebrow{font-size:1.3em;opacity:.6;margin:0 0 .5em;font-weight:700;letter-spacing:.01em}
+.slide-mockup .mock-title{font-size:3.4em;font-weight:800;line-height:1.05;margin:0 0 .3em;word-break:break-word}
+.slide-mockup .mock-sub{font-size:1.7em;font-weight:500;line-height:1.3}
+.slide-mockup .mock-body{font-size:1.85em;font-weight:600;line-height:1.32}
+.slide-mockup .clamp3{max-height:calc(1.32em*3);overflow:hidden}
+.slide-mockup .mock-quote{font-size:2em;font-weight:700;line-height:1.3}
+.slide-mockup .mock-quote:before{content:"“"}
+.slide-mockup .mock-quote:after{content:"”"}
+.slide-mockup .mock-attr{font-size:1.15em;opacity:.75;margin-top:.5em}
+.slide-mockup .mock-change{font-size:1.25em;opacity:.85;margin-top:.6em;font-weight:500}
+.slide-mockup .mock-stat-corner{position:absolute;right:1.4em;bottom:1.4em;text-align:right}
+.slide-mockup .mock-stat-corner .num{font-size:2.2em;font-weight:800;color:var(--pv-accent)}
+.slide-mockup .mock-stat-corner .lbl{font-size:1em;opacity:.75}
+.mock-grid4{display:grid;grid-template-columns:1fr 1fr;gap:.6em;height:100%;align-content:center}
+.mock-grid4 .cell{text-align:center}
+.mock-grid4 .cell .num{font-size:2.5em;font-weight:800;color:var(--pv-accent);line-height:1}
+.mock-cols3{display:flex;justify-content:space-between;gap:1em;margin-top:.4em}
+.mock-cols3 .col{flex:1;text-align:center}
+.mock-cols3 .col .lbl{font-size:1.05em;opacity:.65;margin-bottom:.3em;font-weight:700;text-transform:none}
+.mock-cols3 .col .txt{font-size:1.2em;font-weight:600;line-height:1.25}
+.mock-banner{background:var(--pv-accent);color:#1B0F04;font-weight:800;padding:.5em .8em;
+  border-radius:.4em;font-size:1.4em;display:inline-block;margin-top:.7em}
+.mock-demo-frame{border:2px dashed rgba(255,255,255,.4);border-radius:8px;flex:1;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;gap:.4em;text-align:center}
+.slide-mockup.light .mock-demo-frame{border-color:rgba(16,24,32,.35)}
+.mock-demo-frame .big{font-size:2.6em;font-weight:800;letter-spacing:.02em}
+.mock-demo-frame .cap{font-size:1.15em;opacity:.8;max-width:80%}
+.theme-toggle{display:flex;gap:.4rem;justify-content:center;margin-top:.6rem}
+.theme-toggle button{font-size:.75rem;padding:.3rem .7rem;border-radius:99px;border:1px solid var(--border);
+  background:var(--surface);color:var(--text-muted);cursor:pointer;font-family:inherit}
+.theme-toggle button.active{background:var(--navy);border-color:var(--navy);color:#fff}
+
+/* summary grid */
+.summary-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-top:1rem}
+@media(max-width:860px){.summary-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.summary-grid{grid-template-columns:1fr}}
+.summary-grid .cap{font-size:.75rem;color:var(--text-muted);text-align:center;margin-top:.4rem}
+
+/* status pills / checklist */
+.pill{display:inline-flex;align-items:center;gap:.4em;font-size:.82rem;font-weight:700;
+  padding:.3em .7em;border-radius:99px}
+.pill.ok{background:#DFF1E3;color:var(--ok)}
+.pill.bad{background:#F8E1DD;color:var(--danger)}
+:root[data-theme="dark"] .pill.ok,@media (prefers-color-scheme:dark){.pill.ok{background:#163A24}}
+.chk-row{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;
+  padding:.8rem 0;border-bottom:1px solid var(--border)}
+.chk-row:last-child{border-bottom:none}
+.chk-row .txt{font-size:.92rem}
+.chk-row .hint{font-size:.78rem;color:var(--text-muted);margin-top:.2rem}
+.chk-row input[type=checkbox]{width:1.15em;height:1.15em;margin-top:.15em}
+.wordbox{display:flex;flex-wrap:wrap;gap:1.2rem;align-items:center;background:var(--surface-alt);
+  border-radius:8px;padding:.9rem 1.1rem;margin:1rem 0}
+.wordbox .num{font-size:1.6rem;font-weight:800;color:var(--navy)}
+.wordbox .lbl{font-size:.78rem;color:var(--text-muted)}
+
+.rules-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1rem}
+@media(max-width:760px){.rules-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.rules-grid{grid-template-columns:1fr}}
+.rule-card{background:var(--surface-alt);border-radius:10px;padding:.9rem 1rem}
+.rule-card b{color:var(--navy);display:block;margin-bottom:.3rem;font-size:.9rem}
+.rule-card p{margin:0;font-size:.85rem;color:var(--text)}
+
+.nav-buttons{display:flex;justify-content:space-between;margin-top:1.5rem;gap:1rem}
+.nav-buttons .btn{min-width:110px}
+
+.forbidden-list{margin:.6rem 0 0;padding:0;list-style:none;font-size:.85rem}
+.forbidden-list li{padding:.3em 0;color:var(--danger)}
+
+.app-footer{text-align:center;color:var(--footer);font-size:.78rem;border-top:1px solid var(--border);
+  padding-top:1rem;margin-top:1.5rem}
+
+@media print{
+  .no-print{display:none!important}
+  body{background:#fff}
+  .app{padding:0;max-width:none}
+  .card{border:none;box-shadow:none;padding:0}
+  .summary-grid{display:block}
+  .summary-grid .cap{display:none}
+  .slide-mockup-wrap{page-break-after:always;margin:0}
+  .slide-mockup{width:100%;height:100vh;border-radius:0;font-size:4.4vw}
+  @page{margin:0}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="app-header no-print">
+    <div>
+      <h1>🎤 Питч на 6 слайдах — рабочая тетрадь</h1>
+      <p class="src">По методике Product Games — Тикун Лаб 2.0 · Урок 12.3 «Шпаргалка»</p>
+    </div>
+    <div class="header-right">
+      <div class="progress-wrap">
+        <span>Готовность</span>
+        <div class="progress-bar"><span id="progressFill" style="width:0%"></span></div>
+        <span id="progressPct">0%</span>
+      </div>
+      <button class="btn btn-ghost" id="printTopBtn">Печать / PDF</button>
+      <button class="btn btn-danger-outline" id="resetBtn">Сбросить</button>
+    </div>
+  </header>
+
+  <nav class="tabs no-print" id="tabs">
+    <button class="tab" data-step="intro"><span class="n">0</span>Старт</button>
+    <button class="tab" data-step="s1"><span class="n">1</span>Титульный</button>
+    <button class="tab" data-step="s2"><span class="n">2</span>Проблема</button>
+    <button class="tab" data-step="s3"><span class="n">3</span>Демо</button>
+    <button class="tab" data-step="s4"><span class="n">4</span>Результаты</button>
+    <button class="tab" data-step="s5"><span class="n">5</span>Импакт</button>
+    <button class="tab" data-step="s6"><span class="n">6</span>План + запрос</button>
+    <button class="tab" data-step="bridges"><span class="n">7</span>Связки и текст</button>
+    <button class="tab" data-step="rules"><span class="n">8</span>Оформление</button>
+    <button class="tab" data-step="checklist"><span class="n">9</span>Чеклист</button>
+    <button class="tab" data-step="summary"><span class="n">10</span>Итог</button>
+  </nav>
+
+  <main class="steps">
+
+    <!-- INTRO -->
+    <section class="step" data-step="intro">
+      <div class="card">
+        <h2>Как пользоваться тетрадью</h2>
+        <p class="lead">6 слайдов. 550 слов текста. 4 минуты на прогон. Больше — это не питч, а презентация, в которой вы что-то прячете.</p>
+        <div class="rules-grid" style="grid-template-columns:repeat(3,1fr)">
+          <div class="rule-card"><b>6 слайдов</b><p>Ни одним больше. Каждый — одна мысль.</p></div>
+          <div class="rule-card"><b>550 слов</b><p>Весь текст питча целиком, с учётом связок.</p></div>
+          <div class="rule-card"><b>4:00</b><p>Прогон с таймером, включая демо.</p></div>
+        </div>
+        <p class="lead" style="margin-top:1.2rem">Идите по вкладкам по порядку: сначала контент каждого слайда (1–6), затем связки между блоками и черновик текста речи, затем сверьтесь с правилами оформления и финальным чеклистом. На шаге «Итог» тетрадь соберёт визуальные превью всех 6 слайдов — их можно распечатать или сохранить как PDF и использовать как основу для настоящей презентации.</p>
+        <p class="lead">Подсказка: ориентир «Май» в блоке горизонтов (слайд 6) — это типичная дата демо-дня в акселераторах такого формата.</p>
+        <div class="nav-buttons">
+          <span></span>
+          <button class="btn btn-orange next-btn">Начать →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 1 -->
+    <section class="step" data-step="s1">
+      <div class="card">
+        <h2><span class="step-num">Слайд 1</span> — Титульный</h2>
+        <div class="hintbox">
+          <div class="yes"><b>Что есть</b>Название проекта. Одно предложение — что вы делаете.</div>
+          <div class="no"><b>Чего нет</b>Логотип, фото команды, 5 строк описания, QR-код.</div>
+        </div>
+        <div class="editor-grid">
+          <div>
+            <div class="field">
+              <label for="s1-name">Название проекта</label>
+              <input type="text" id="s1-name" placeholder="Например: Seedeemtut">
+            </div>
+            <div class="field">
+              <label for="s1-one">Одно предложение — что вы делаете</label>
+              <textarea id="s1-one" placeholder="Одной фразой, без терминов и без «инновационный»/«платформа»"></textarea>
+            </div>
+            <p class="warn-line" id="s1-warn" hidden>⚠ Текст не помещается в 3 строки на слайде — сократите.</p>
+          </div>
+          <div class="preview-col">
+            <div class="slide-mockup" id="mock1">
+              <div class="mock-eyebrow">Проект</div>
+              <h3 class="mock-title" id="mock1-name">Название проекта</h3>
+              <div class="mock-sub clamp3" id="mock1-one">Одно предложение о том, что вы делаете</div>
+            </div>
+            <p class="mockup-caption">Так слайд увидит жюри. Больше здесь ничего быть не должно.</p>
+          </div>
+        </div>
+        <div class="nav-buttons"><button class="btn btn-outline prev-btn">← Назад</button><button class="btn btn-orange next-btn">Далее →</button></div>
+      </div>
+    </section>
+
+    <!-- SLIDE 2 -->
+    <section class="step" data-step="s2">
+      <div class="card">
+        <h2><span class="step-num">Слайд 2</span> — Проблема</h2>
+        <div class="hintbox">
+          <div class="yes"><b>Что есть</b>Имя клиента. Боль (1–2 предложения). Масштаб (одна цифра).</div>
+          <div class="no"><b>Чего нет</b>Статистика из Википедии, абстрактные формулировки, графики.</div>
+        </div>
+        <div class="editor-grid">
+          <div>
+            <div class="field">
+              <label for="s2-client">Имя клиента <span class="opt">(реальный человек, не «пользователи»)</span></label>
+              <input type="text" id="s2-client" placeholder="Например: Наталья, владелица кофейни">
+            </div>
+            <div class="field">
+              <label for="s2-pain">Боль (1–2 предложения)</label>
+              <textarea id="s2-pain" placeholder="Что конкретно болит у этого человека прямо сейчас"></textarea>
+            </div>
+            <p class="warn-line" id="s2-warn" hidden>⚠ Текст не помещается в 3 строки на слайде — сократите.</p>
+            <div class="field">
+              <label for="s2-scale">Масштаб <span class="opt">(одна цифра)</span></label>
+              <input type="text" id="s2-scale" placeholder="Например: теряет 40 часов в неделю">
+            </div>
+          </div>
+          <div class="preview-col">
+            <div class="slide-mockup" id="mock2">
+              <div class="mock-eyebrow">Клиент</div>
+              <h3 class="mock-title" style="font-size:2.3em" id="mock2-client">Имя клиента</h3>
+              <div class="mock-body clamp3" id="mock2-pain">Описание боли клиента</div>
+              <div class="mock-stat-corner">
+                <div class="num" id="mock2-scale">—</div>
+              </div>
+            </div>
+            <p class="mockup-caption">Один реальный человек и одна цифра — не статистика «по рынку».</p>
+          </div>
+        </div>
+        <div class="nav-buttons"><button class="btn btn-outline prev-btn">← Назад</button><button class="btn btn-orange next-btn">Далее →</button></div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3 -->
+    <section class="step" data-step="s3">
+      <div class="card">
+        <h2><span class="step-num">Слайд 3</span> — Демо (экран продукта)</h2>
+        <div class="hintbox">
+          <div class="yes"><b>Что есть</b>Живой продукт на экране. Вы кликаете, жюри видит.</div>
+          <div class="no"><b>Чего нет</b>Скриншоты на слайде вместо живого продукта. Описание функций текстом.</div>
+        </div>
+        <div class="editor-grid">
+          <div>
+            <div class="field">
+              <label for="s3-demo">Сценарий демо <span class="opt">(что именно вы кликаете, по шагам — для себя, не для слайда)</span></label>
+              <textarea id="s3-demo" placeholder="1. Открываю… 2. Нажимаю… 3. Показываю результат…" style="min-height:6em"></textarea>
+            </div>
+            <label style="font-weight:700;color:var(--navy);font-size:.9rem;display:block;margin-bottom:.4rem">Готовность демо</label>
+            <div class="checkline"><input type="checkbox" id="s3-net"><label for="s3-net">Интернет проверен на месте</label></div>
+            <div class="checkline"><input type="checkbox" id="s3-data"><label for="s3-data">Тестовые данные в продукте готовы заранее</label></div>
+            <div class="checkline"><input type="checkbox" id="s3-backup"><label for="s3-backup">Есть запасной план (видео/скриншоты) на случай сбоя</label></div>
+          </div>
+          <div class="preview-col">
+            <div class="slide-mockup" id="mock3">
+              <div class="mock-demo-frame">
+                <div class="big">ДЕМО</div>
+                <div class="cap" id="mock3-cap">Живой продукт на экране</div>
+              </div>
+            </div>
+            <p class="mockup-caption">На слайде нет текста — здесь вы переключаетесь на реальный продукт.</p>
+          </div>
+        </div>
+        <div class="nav-buttons"><button class="btn btn-outline prev-btn">← Назад</button><button class="btn btn-orange next-btn">Далее →</button></div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4 -->
+    <section class="step" data-step="s4">
+      <div class="card">
+        <h2><span class="step-num">Слайд 4</span> — Результаты</h2>
+        <div class="hintbox">
+          <div class="yes"><b>Что есть</b>Четыре числа крупным шрифтом. Больше ничего.</div>
+          <div class="no"><b>Чего нет</b>Дашборд, таблица, графики, мелкий текст, 10 метрик.</div>
+        </div>
+        <p class="lead">На самом слайде — только цифры (по правилу «больше ничего»). Подписи ниже — то, что вы скажете вслух, глядя на слайд.</p>
+        <div class="editor-grid">
+          <div>
+            <div class="pair field"><input type="text" id="s4-v1" placeholder="Число 1, напр. 47"><input type="text" id="s4-l1" placeholder="Что это значит (скажете вслух)"></div>
+            <div class="pair field"><input type="text" id="s4-v2" placeholder="Число 2"><input type="text" id="s4-l2" placeholder="Что это значит"></div>
+            <div class="pair field"><input type="text" id="s4-v3" placeholder="Число 3"><input type="text" id="s4-l3" placeholder="Что это значит"></div>
+            <div class="pair field"><input type="text" id="s4-v4" placeholder="Число 4"><input type="text" id="s4-l4" placeholder="Что это значит"></div>
+          </div>
+          <div class="preview-col">
+            <div class="slide-mockup" id="mock4">
+              <div class="mock-grid4">
+                <div class="cell"><div class="num" id="mock4-v1">—</div></div>
+                <div class="cell"><div class="num" id="mock4-v2">—</div></div>
+                <div class="cell"><div class="num" id="mock4-v3">—</div></div>
+                <div class="cell"><div class="num" id="mock4-v4">—</div></div>
+              </div>
+            </div>
+            <p class="mockup-caption">Если число не видно с последнего ряда — увеличьте.</p>
+          </div>
+        </div>
+        <div class="nav-buttons"><button class="btn btn-outline prev-btn">← Назад</button><button class="btn btn-orange next-btn">Далее →</button></div>
+      </div>
+    </section>
+
+    <!-- SLIDE 5 -->
+    <section class="step" data-step="s5">
+      <div class="card">
+        <h2><span class="step-num">Слайд 5</span> — Импакт</h2>
+        <div class="hintbox">
+          <div class="yes"><b>Что есть</b>Цитата клиента крупным шрифтом. Одно предложение про системное изменение.</div>
+          <div class="no"><b>Чего нет</b>Абстрактная миссия, слоган, картинка из стока.</div>
+        </div>
+        <div class="editor-grid">
+          <div>
+            <div class="field">
+              <label for="s5-quote">Цитата клиента</label>
+              <textarea id="s5-quote" placeholder="Дословная фраза, которую сказал клиент"></textarea>
+            </div>
+            <p class="warn-line" id="s5-warn" hidden>⚠ Цитата не помещается в 3 строки на слайде — сократите.</p>
+            <div class="field">
+              <label for="s5-author">Кто сказал <span class="opt">(по умолчанию — клиент со слайда 2)</span></label>
+              <input type="text" id="s5-author" placeholder="">
+            </div>
+            <div class="field">
+              <label for="s5-change">Одно предложение про системное изменение</label>
+              <input type="text" id="s5-change" placeholder="Что изменилось не только у одного клиента, а в целом">
+            </div>
+          </div>
+          <div class="preview-col">
+            <div class="slide-mockup" id="mock5">
+              <div class="mock-quote clamp3" id="mock5-quote">Цитата клиента</div>
+              <div class="mock-attr" id="mock5-author">— автор цитаты</div>
+              <div class="mock-change" id="mock5-change">Предложение про системное изменение</div>
+            </div>
+            <p class="mockup-caption">Цитата — самый крупный элемент. Без стоковых картинок.</p>
+          </div>
+        </div>
+        <div class="nav-buttons"><button class="btn btn-outline prev-btn">← Назад</button><button class="btn btn-orange next-btn">Далее →</button></div>
+      </div>
+    </section>
+
+    <!-- SLIDE 6 -->
+    <section class="step" data-step="s6">
+      <div class="card">
+        <h2><span class="step-num">Слайд 6</span> — План + запрос</h2>
+        <div class="hintbox">
+          <div class="yes"><b>Что есть</b>Три горизонта (май / октябрь / видение). Конкретный запрос.</div>
+          <div class="no"><b>Чего нет</b>Роадмэп на 40 задач. «Спасибо за внимание».</div>
+        </div>
+        <div class="editor-grid">
+          <div>
+            <div class="pair field"><input type="text" id="s6-h1l" placeholder="Май"><input type="text" id="s6-h1t" placeholder="Что будет к маю"></div>
+            <div class="pair field"><input type="text" id="s6-h2l" placeholder="Октябрь"><input type="text" id="s6-h2t" placeholder="Что будет к октябрю"></div>
+            <div class="pair field"><input type="text" id="s6-h3l" placeholder="Видение"><input type="text" id="s6-h3t" placeholder="Куда идёт проект дальше"></div>
+            <div class="field">
+              <label for="s6-ask">Конкретный запрос <span class="opt">(не «спасибо за внимание»)</span></label>
+              <input type="text" id="s6-ask" placeholder="Например: нужны 3 интро к сетям кофеен">
+            </div>
+          </div>
+          <div class="preview-col">
+            <div class="slide-mockup" id="mock6">
+              <div class="mock-cols3">
+                <div class="col"><div class="lbl" id="mock6-h1l">Май</div><div class="txt" id="mock6-h1t">—</div></div>
+                <div class="col"><div class="lbl" id="mock6-h2l">Октябрь</div><div class="txt" id="mock6-h2t">—</div></div>
+                <div class="col"><div class="lbl" id="mock6-h3l">Видение</div><div class="txt" id="mock6-h3t">—</div></div>
+              </div>
+              <div style="text-align:center"><span class="mock-banner" id="mock6-ask">Запрос</span></div>
+            </div>
+            <p class="mockup-caption">Последнее, что видит жюри — конкретный запрос, не благодарность.</p>
+          </div>
+        </div>
+        <div class="nav-buttons"><button class="btn btn-outline prev-btn">← Назад</button><button class="btn btn-orange next-btn">Далее →</button></div>
+      </div>
+    </section>
+
+    <!-- BRIDGES + PITCH TEXT -->
+    <section class="step" data-step="bridges">
+      <div class="card">
+        <h2>Связки между блоками и текст питча</h2>
+        <p class="lead">Жюри теряет нить, если слайды просто сменяют друг друга. Нужно 4 короткие фразы-мостика — по одной между каждой парой блоков.</p>
+        <div class="field"><label for="b1">Мост 1 — Проблема → Демо</label><input type="text" id="b1" placeholder="Например: Вот что мы для этого сделали."></div>
+        <div class="field"><label for="b2">Мост 2 — Демо → Результаты</label><input type="text" id="b2" placeholder="Например: И вот что это дало за первые недели."></div>
+        <div class="field"><label for="b3">Мост 3 — Результаты → Импакт</label><input type="text" id="b3" placeholder="Например: Но дело не только в цифрах."></div>
+        <div class="field"><label for="b4">Мост 4 — Импакт → План</label><input type="text" id="b4" placeholder="Например: Вот что мы хотим сделать дальше."></div>
+
+        <h2 style="margin-top:1.6rem">Текст питча</h2>
+        <p class="lead">Полный текст того, что вы скажете вслух за 4 минуты. Не больше 550 слов.</p>
+        <button class="btn btn-outline" id="assembleBtn" style="margin-bottom:.8rem">Собрать черновик из слайдов и связок</button>
+        <div class="field">
+          <textarea id="pitchText" style="min-height:12em" placeholder="Нажмите «Собрать черновик» или пишите текст здесь сами"></textarea>
+        </div>
+        <div class="wordbox">
+          <div><div class="num" id="wordCount">0</div><div class="lbl">слов из 550</div></div>
+          <div><div class="num" id="timeEstimate">0:00</div><div class="lbl">≈ время при 140 слов/мин</div></div>
+          <div id="wordStatus"></div>
+        </div>
+        <div class="nav-buttons"><button class="btn btn-outline prev-btn">← Назад</button><button class="btn btn-orange next-btn">Далее →</button></div>
+      </div>
+    </section>
+
+    <!-- RULES -->
+    <section class="step" data-step="rules">
+      <div class="card">
+        <h2>Правила оформления</h2>
+        <div class="rules-grid">
+          <div class="rule-card"><b>Один шрифт</b><p>Без засечек. Крупный. Заголовки — от 28 pt, текст — от 18 pt.</p></div>
+          <div class="rule-card"><b>Крупные числа</b><p>Цифры — самый крупный элемент. Не видно с последнего ряда — увеличьте.</p></div>
+          <div class="rule-card"><b>Минимум текста</b><p>Максимум 3 строки на слайде. Больше — вы читаете слайд, а не рассказываете.</p></div>
+          <div class="rule-card"><b>Без анимаций</b><p>Никаких вылетающих букв и появляющихся блоков — отвлекает и ломается.</p></div>
+          <div class="rule-card"><b>Контраст</b><p>Тёмный фон — светлый текст, или наоборот. Пастель на белом — нет.</p></div>
+          <div class="rule-card"><b>Одна мысль — один слайд</b><p>Слайд про две вещи? Разбейте на два.</p></div>
+        </div>
+        <p style="margin-top:1.2rem;font-weight:700;color:var(--navy)">Тема слайдов в этой тетради:</p>
+        <div class="theme-toggle" style="justify-content:flex-start">
+          <button id="themeDarkBtn" class="active">Тёмный фон / светлый текст</button>
+          <button id="themeLightBtn">Светлый фон / тёмный текст</button>
+        </div>
+        <div class="nav-buttons"><button class="btn btn-outline prev-btn">← Назад</button><button class="btn btn-orange next-btn">Далее →</button></div>
+      </div>
+    </section>
+
+    <!-- CHECKLIST -->
+    <section class="step" data-step="checklist">
+      <div class="card">
+        <h2>Чеклист перед Демо-днём</h2>
+        <p class="lead">Первые пять пунктов тетрадь проверяет сама по тому, что вы уже заполнили. Остальные пять подтвердите вручную.</p>
+
+        <div class="chk-row"><div class="txt">1. Текст питча — не больше 550 слов<div class="hint" id="c1hint"></div></div><span class="pill" id="c1pill"></span></div>
+        <div class="chk-row"><div class="txt">2. Прогон с таймером — укладывается в 4:00<div class="hint">Прочитайте текст питча вслух с таймером и отметьте, если уложились.</div></div><input type="checkbox" id="c2"></div>
+        <div class="chk-row"><div class="txt">3. Слайдов — не больше 6<div class="hint">Тетрадь построена под ровно 6 слайдов.</div></div><span class="pill ok">✓ 6 слайдов</span></div>
+        <div class="chk-row"><div class="txt">4. Четыре связки между блоками на месте<div class="hint" id="c4hint"></div></div><span class="pill" id="c4pill"></span></div>
+        <div class="chk-row"><div class="txt">5. Демо отрепетировано: интернет, данные, запасной план<div class="hint" id="c5hint"></div></div><span class="pill" id="c5pill"></span></div>
+        <div class="chk-row"><div class="txt">6. Первое предложение — имя реального человека<div class="hint" id="c6hint">Начните текст с имени клиента со слайда 2.</div></div><input type="checkbox" id="c6"></div>
+        <div class="chk-row"><div class="txt">7. Последнее предложение — запрос, не «спасибо»<div class="hint" id="c7hint"></div></div><input type="checkbox" id="c7"></div>
+        <div class="chk-row"><div class="txt">8. Нет слов «инновационный», «уникальный», «платформа», «экосистема»<div class="hint" id="c8hint">Проверяется автоматически по всем полям и тексту питча.</div><ul class="forbidden-list" id="c8list"></ul></div><span class="pill" id="c8pill"></span></div>
+        <div class="chk-row"><div class="txt">9. Нет хронологии («в январе… в феврале… в марте…»)<div class="hint" id="c9hint">Проверьте, что текст питча не построен как календарь.</div></div><input type="checkbox" id="c9"></div>
+        <div class="chk-row"><div class="txt">10. Человек не из команды послушал и сказал: «Понял. Хочу помочь»<div class="hint">Это можно подтвердить только вживую — прогоните питч на постороннем человеке.</div></div><input type="checkbox" id="c10"></div>
+
+        <div class="nav-buttons"><button class="btn btn-outline prev-btn">← Назад</button><button class="btn btn-orange next-btn">Далее →</button></div>
+      </div>
+    </section>
+
+    <!-- SUMMARY -->
+    <section class="step" data-step="summary">
+      <div class="card">
+        <h2>Итог: ваша колода на 6 слайдов</h2>
+        <p class="lead no-print">Превью ниже — визуальная основа презентации. Печать/PDF выводит только эти 6 слайдов, по одному на страницу — в альбомной ориентации.</p>
+        <div class="wordbox no-print">
+          <div><div class="num" id="sumWords">0 / 550</div><div class="lbl">слов в тексте питча</div></div>
+          <div><div class="num" id="sumChecklist">0 / 10</div><div class="lbl">пунктов чеклиста готово</div></div>
+          <div><button class="btn btn-orange" id="printBtn">Печать / сохранить как PDF</button></div>
+          <div><button class="btn btn-outline" id="copyBtn">Скопировать текст питча</button></div>
+        </div>
+
+        <div class="summary-grid">
+          <div class="slide-mockup-wrap"><div class="slide-mockup" id="s-mock1"></div><p class="cap">Слайд 1 — Титульный</p></div>
+          <div class="slide-mockup-wrap"><div class="slide-mockup" id="s-mock2"></div><p class="cap">Слайд 2 — Проблема</p></div>
+          <div class="slide-mockup-wrap"><div class="slide-mockup" id="s-mock3"></div><p class="cap">Слайд 3 — Демо</p></div>
+          <div class="slide-mockup-wrap"><div class="slide-mockup" id="s-mock4"></div><p class="cap">Слайд 4 — Результаты</p></div>
+          <div class="slide-mockup-wrap"><div class="slide-mockup" id="s-mock5"></div><p class="cap">Слайд 5 — Импакт</p></div>
+          <div class="slide-mockup-wrap"><div class="slide-mockup" id="s-mock6"></div><p class="cap">Слайд 6 — План + запрос</p></div>
+        </div>
+
+        <div class="nav-buttons no-print"><button class="btn btn-outline prev-btn">← Назад</button><span></span></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="app-footer no-print">
+    Рабочая тетрадь «Питч на 6 слайдах» · заполняется в этом браузере, ничего не отправляется на сервер
+  </footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+var STORAGE_KEY = "pitch6_workbook_v1";
+var STEPS = ["intro","s1","s2","s3","s4","s5","s6","bridges","rules","checklist","summary"];
+var FORBIDDEN = ["инновацион","уникальн","платформ","экосистем"];
+
+function defaults(){
+  return {
+    theme:"dark",
+    s1:{name:"",one:""},
+    s2:{client:"",pain:"",scale:""},
+    s3:{demo:"",net:false,data:false,backup:false},
+    s4:{v1:"",l1:"",v2:"",l2:"",v3:"",l3:"",v4:"",l4:""},
+    s5:{quote:"",author:"",change:""},
+    s6:{h1l:"Май",h1t:"",h2l:"Октябрь",h2t:"",h3l:"Видение",h3t:"",ask:""},
+    br:{b1:"",b2:"",b3:"",b4:""},
+    pitch:"",
+    chk:{c2:false,c6:false,c7:false,c9:false,c10:false},
+    step:"intro"
+  };
+}
+
+var state = defaults();
+
+function load(){
+  try{
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      var parsed = JSON.parse(raw);
+      var d = defaults();
+      for(var k in d){ if(parsed[k]!==undefined) d[k] = parsed[k]; }
+      state = d;
+    }
+  }catch(e){ state = defaults(); }
+}
+function save(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+}
+
+function $(id){ return document.getElementById(id); }
+function esc(s){
+  return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+/* ---- step navigation ---- */
+function goToStep(name){
+  state.step = name;
+  document.querySelectorAll(".step").forEach(function(el){
+    el.classList.toggle("active", el.getAttribute("data-step")===name);
+  });
+  document.querySelectorAll(".tab").forEach(function(el){
+    el.classList.toggle("active", el.getAttribute("data-step")===name);
+  });
+  window.scrollTo({top:0,behavior:"instant" in window ? "instant" : "auto"});
+  save();
+}
+document.querySelectorAll(".tab").forEach(function(btn){
+  btn.addEventListener("click", function(){ goToStep(btn.getAttribute("data-step")); });
+});
+document.querySelectorAll(".next-btn").forEach(function(btn){
+  btn.addEventListener("click", function(){
+    var i = STEPS.indexOf(state.step);
+    if(i < STEPS.length-1) goToStep(STEPS[i+1]);
+  });
+});
+document.querySelectorAll(".prev-btn").forEach(function(btn){
+  btn.addEventListener("click", function(){
+    var i = STEPS.indexOf(state.step);
+    if(i > 0) goToStep(STEPS[i-1]);
+  });
+});
+
+/* ---- binding helpers ---- */
+function bindText(id, getter, setter){
+  var el = $(id);
+  el.value = getter();
+  el.addEventListener("input", function(){ setter(el.value); renderAll(); });
+}
+function bindCheck(id, getter, setter){
+  var el = $(id);
+  el.checked = getter();
+  el.addEventListener("change", function(){ setter(el.checked); renderAll(); });
+}
+
+function initBindings(){
+  bindText("s1-name", function(){return state.s1.name;}, function(v){state.s1.name=v;});
+  bindText("s1-one", function(){return state.s1.one;}, function(v){state.s1.one=v;});
+
+  bindText("s2-client", function(){return state.s2.client;}, function(v){state.s2.client=v;});
+  bindText("s2-pain", function(){return state.s2.pain;}, function(v){state.s2.pain=v;});
+  bindText("s2-scale", function(){return state.s2.scale;}, function(v){state.s2.scale=v;});
+
+  bindText("s3-demo", function(){return state.s3.demo;}, function(v){state.s3.demo=v;});
+  bindCheck("s3-net", function(){return state.s3.net;}, function(v){state.s3.net=v;});
+  bindCheck("s3-data", function(){return state.s3.data;}, function(v){state.s3.data=v;});
+  bindCheck("s3-backup", function(){return state.s3.backup;}, function(v){state.s3.backup=v;});
+
+  ["v1","l1","v2","l2","v3","l3","v4","l4"].forEach(function(k){
+    bindText("s4-"+k, function(){return state.s4[k];}, function(v){state.s4[k]=v;});
+  });
+
+  bindText("s5-quote", function(){return state.s5.quote;}, function(v){state.s5.quote=v;});
+  bindText("s5-author", function(){return state.s5.author;}, function(v){state.s5.author=v;});
+  bindText("s5-change", function(){return state.s5.change;}, function(v){state.s5.change=v;});
+
+  ["h1l","h1t","h2l","h2t","h3l","h3t","ask"].forEach(function(k){
+    bindText("s6-"+k, function(){return state.s6[k];}, function(v){state.s6[k]=v;});
+  });
+
+  bindText("b1", function(){return state.br.b1;}, function(v){state.br.b1=v;});
+  bindText("b2", function(){return state.br.b2;}, function(v){state.br.b2=v;});
+  bindText("b3", function(){return state.br.b3;}, function(v){state.br.b3=v;});
+  bindText("b4", function(){return state.br.b4;}, function(v){state.br.b4=v;});
+
+  bindText("pitchText", function(){return state.pitch;}, function(v){state.pitch=v;});
+
+  bindCheck("c2", function(){return state.chk.c2;}, function(v){state.chk.c2=v;});
+  bindCheck("c6", function(){return state.chk.c6;}, function(v){state.chk.c6=v;});
+  bindCheck("c7", function(){return state.chk.c7;}, function(v){state.chk.c7=v;});
+  bindCheck("c9", function(){return state.chk.c9;}, function(v){state.chk.c9=v;});
+  bindCheck("c10", function(){return state.chk.c10;}, function(v){state.chk.c10=v;});
+}
+
+/* ---- theme toggle ---- */
+function setPreviewTheme(t){
+  state.theme = t;
+  document.querySelectorAll(".slide-mockup").forEach(function(el){
+    el.classList.toggle("light", t==="light");
+  });
+  $("themeDarkBtn").classList.toggle("active", t==="dark");
+  $("themeLightBtn").classList.toggle("active", t==="light");
+  save();
+}
+$("themeDarkBtn").addEventListener("click", function(){ setPreviewTheme("dark"); });
+$("themeLightBtn").addEventListener("click", function(){ setPreviewTheme("light"); });
+
+/* ---- overflow (3-line) warnings ---- */
+function checkOverflow(elId, warnId){
+  var el = $(elId), w = $(warnId);
+  if(!el || !w) return;
+  w.hidden = !(el.scrollHeight > el.clientHeight + 1);
+}
+
+/* ---- render mockups (used both in editing preview and summary grid) ---- */
+function fillMock(prefix, suffix){
+  var g = function(id){ return $(prefix + id + (suffix||"")); };
+  return g;
+}
+
+function renderSlideMockups(){
+  ["mock1","mock2","mock3","mock4","mock5","mock6","s-mock1","s-mock2","s-mock3","s-mock4","s-mock5","s-mock6"].forEach(function(id){
+    var el = $(id);
+    if(el) el.classList.toggle("light", state.theme==="light");
+  });
+
+  // slide 1
+  var t1 = $("mock1-name"), o1 = $("mock1-one");
+  if(t1) t1.textContent = state.s1.name || "Название проекта";
+  if(o1) o1.textContent = state.s1.one || "Одно предложение о том, что вы делаете";
+  checkOverflow("mock1-one","s1-warn");
+
+  // slide 2
+  var c2 = $("mock2-client"), p2 = $("mock2-pain"), sc2 = $("mock2-scale");
+  if(c2) c2.textContent = state.s2.client || "Имя клиента";
+  if(p2) p2.textContent = state.s2.pain || "Описание боли клиента";
+  if(sc2) sc2.textContent = state.s2.scale || "—";
+  checkOverflow("mock2-pain","s2-warn");
+
+  // slide 3
+  var cap3 = $("mock3-cap");
+  if(cap3) cap3.textContent = "Живой продукт на экране";
+
+  // slide 4
+  [1,2,3,4].forEach(function(n){
+    var el = $("mock4-v"+n);
+    if(el) el.textContent = state.s4["v"+n] || "—";
+  });
+
+  // slide 5
+  var q5 = $("mock5-quote"), a5 = $("mock5-author"), ch5 = $("mock5-change");
+  if(q5) q5.textContent = state.s5.quote || "Цитата клиента";
+  if(a5) a5.textContent = "— " + (state.s5.author || state.s2.client || "клиент");
+  if(ch5) ch5.textContent = state.s5.change || "";
+  checkOverflow("mock5-quote","s5-warn");
+
+  // slide 6
+  $("mock6-h1l").textContent = state.s6.h1l || "Май";
+  $("mock6-h1t").textContent = state.s6.h1t || "—";
+  $("mock6-h2l").textContent = state.s6.h2l || "Октябрь";
+  $("mock6-h2t").textContent = state.s6.h2t || "—";
+  $("mock6-h3l").textContent = state.s6.h3l || "Видение";
+  $("mock6-h3t").textContent = state.s6.h3t || "—";
+  $("mock6-ask").textContent = state.s6.ask || "Ваш запрос";
+
+  // summary grid: rebuild inner HTML from same data
+  $("s-mock1").innerHTML = '<div class="mock-eyebrow">Проект</div><h3 class="mock-title">'+esc(state.s1.name||"Название проекта")+'</h3><div class="mock-sub">'+esc(state.s1.one||"Одно предложение о том, что вы делаете")+'</div>';
+  $("s-mock2").innerHTML = '<div class="mock-eyebrow">Клиент</div><h3 class="mock-title" style="font-size:2.3em">'+esc(state.s2.client||"Имя клиента")+'</h3><div class="mock-body">'+esc(state.s2.pain||"Описание боли клиента")+'</div><div class="mock-stat-corner"><div class="num">'+esc(state.s2.scale||"—")+'</div></div>';
+  $("s-mock3").innerHTML = '<div class="mock-demo-frame"><div class="big">ДЕМО</div><div class="cap">Живой продукт на экране</div></div>';
+  $("s-mock4").innerHTML = '<div class="mock-grid4">'+[1,2,3,4].map(function(n){return '<div class="cell"><div class="num">'+esc(state.s4["v"+n]||"—")+'</div></div>';}).join("")+'</div>';
+  $("s-mock5").innerHTML = '<div class="mock-quote">'+esc(state.s5.quote||"Цитата клиента")+'</div><div class="mock-attr">— '+esc(state.s5.author||state.s2.client||"клиент")+'</div><div class="mock-change">'+esc(state.s5.change||"")+'</div>';
+  $("s-mock6").innerHTML = '<div class="mock-cols3">'+
+    '<div class="col"><div class="lbl">'+esc(state.s6.h1l||"Май")+'</div><div class="txt">'+esc(state.s6.h1t||"—")+'</div></div>'+
+    '<div class="col"><div class="lbl">'+esc(state.s6.h2l||"Октябрь")+'</div><div class="txt">'+esc(state.s6.h2t||"—")+'</div></div>'+
+    '<div class="col"><div class="lbl">'+esc(state.s6.h3l||"Видение")+'</div><div class="txt">'+esc(state.s6.h3t||"—")+'</div></div>'+
+    '</div><div style="text-align:center"><span class="mock-banner">'+esc(state.s6.ask||"Ваш запрос")+'</span></div>';
+}
+
+/* ---- word count / time ---- */
+function countWords(text){
+  var t = (text||"").trim();
+  if(!t) return 0;
+  return t.split(/\s+/).filter(Boolean).length;
+}
+function renderWordCount(){
+  var n = countWords(state.pitch);
+  var mins = n/140;
+  var mm = Math.floor(mins), ss = Math.round((mins-mm)*60);
+  if(ss===60){mm++;ss=0;}
+  var timeStr = mm+":"+(ss<10?"0":"")+ss;
+
+  $("wordCount").textContent = n;
+  $("wordCount").parentElement.previousSibling; // no-op safe
+  $("timeEstimate").textContent = timeStr;
+  var status = $("wordStatus");
+  if(n===0){
+    status.innerHTML = "";
+  } else if(n<=550){
+    status.innerHTML = '<span class="pill ok">✓ в пределах лимита</span>';
+  } else {
+    status.innerHTML = '<span class="pill bad">⚠ превышение на '+(n-550)+' слов</span>';
+  }
+  $("sumWords").textContent = n+" / 550";
+}
+
+/* ---- assemble draft pitch text ---- */
+$("assembleBtn").addEventListener("click", function(){
+  var lines = [];
+  var client = state.s2.client || "[имя клиента]";
+  lines.push((client+" "+(state.s2.pain||"[боль клиента]")+(state.s2.scale?(" "+state.s2.scale+"."):".")).trim());
+  lines.push("Поэтому мы создали «"+(state.s1.name||"[название проекта]")+"» — "+(state.s1.one||"[что вы делаете]"));
+  lines.push(state.br.b1 || "[мост 1 — заполните на этом шаге]");
+  lines.push("Сейчас покажу, как это работает.");
+  lines.push(state.br.b2 || "[мост 2 — заполните на этом шаге]");
+  var nums = [1,2,3,4].map(function(n){
+    var v = state.s4["v"+n], l = state.s4["l"+n];
+    if(!v && !l) return null;
+    return (l?l+": ":"")+(v||"");
+  }).filter(Boolean);
+  if(nums.length) lines.push(nums.join(". ")+".");
+  lines.push(state.br.b3 || "[мост 3 — заполните на этом шаге]");
+  if(state.s5.quote) lines.push('«'+state.s5.quote+'» — говорит '+(state.s5.author||client)+".");
+  if(state.s5.change) lines.push(state.s5.change);
+  lines.push(state.br.b4 || "[мост 4 — заполните на этом шаге]");
+  var horizons = [];
+  if(state.s6.h1t) horizons.push("К "+(state.s6.h1l||"маю")+" мы "+state.s6.h1t+".");
+  if(state.s6.h2t) horizons.push("К "+(state.s6.h2l||"октябрю")+" — "+state.s6.h2t+".");
+  if(state.s6.h3t) horizons.push((state.s6.h3l||"Видение")+": "+state.s6.h3t+".");
+  if(horizons.length) lines.push(horizons.join(" "));
+  lines.push(state.s6.ask || "[конкретный запрос — заполните на слайде 6]");
+
+  state.pitch = lines.filter(Boolean).join("\n\n");
+  $("pitchText").value = state.pitch;
+  renderAll();
+});
+
+/* ---- forbidden words scan ---- */
+function scanForbidden(){
+  var fields = [
+    ["Слайд 1", state.s1.one],
+    ["Слайд 2", state.s2.pain],
+    ["Слайд 3", state.s3.demo],
+    ["Слайд 4", [state.s4.l1,state.s4.l2,state.s4.l3,state.s4.l4].join(" ")],
+    ["Слайд 5", state.s5.quote+" "+state.s5.change],
+    ["Слайд 6", state.s6.h1t+" "+state.s6.h2t+" "+state.s6.h3t+" "+state.s6.ask],
+    ["Связки", [state.br.b1,state.br.b2,state.br.b3,state.br.b4].join(" ")],
+    ["Текст питча", state.pitch]
+  ];
+  var found = [];
+  fields.forEach(function(pair){
+    var loc = pair[0], text = (pair[1]||"").toLowerCase();
+    FORBIDDEN.forEach(function(w){
+      if(text.indexOf(w)!==-1) found.push(loc+": «…"+w+"…»");
+    });
+  });
+  return found;
+}
+
+/* ---- checklist auto-derivation ---- */
+function renderChecklist(){
+  var n = countWords(state.pitch);
+  var c1ok = n>0 && n<=550;
+  $("c1pill").className = "pill " + (c1ok?"ok":"bad");
+  $("c1pill").textContent = (c1ok?"✓ ":"⚠ ")+n+" / 550";
+  $("c1hint").textContent = n===0 ? "Текст питча ещё не заполнен (шаг «Связки и текст»)." : (c1ok ? "В пределах лимита." : "Сократите на "+(n-550)+" слов.");
+
+  var bridgesFilled = state.br.b1 && state.br.b2 && state.br.b3 && state.br.b4;
+  $("c4pill").className = "pill " + (bridgesFilled?"ok":"bad");
+  $("c4pill").textContent = bridgesFilled ? "✓ все 4 на месте" : "⚠ заполнено не всё";
+  var bcount = [state.br.b1,state.br.b2,state.br.b3,state.br.b4].filter(Boolean).length;
+  $("c4hint").textContent = bridgesFilled ? "Все связки заполнены." : (bcount+" из 4 мостов заполнено — шаг «Связки и текст».");
+
+  var demoReady = state.s3.net && state.s3.data && state.s3.backup;
+  $("c5pill").className = "pill " + (demoReady?"ok":"bad");
+  $("c5pill").textContent = demoReady ? "✓ демо готово" : "⚠ не всё готово";
+  var missing = [];
+  if(!state.s3.net) missing.push("интернет");
+  if(!state.s3.data) missing.push("данные");
+  if(!state.s3.backup) missing.push("запасной план");
+  $("c5hint").textContent = demoReady ? "Интернет, данные и запасной план подтверждены." : "Не отмечено: "+missing.join(", ")+".";
+
+  var found = scanForbidden();
+  var c8ok = found.length===0;
+  $("c8pill").className = "pill " + (c8ok?"ok":"bad");
+  $("c8pill").textContent = c8ok ? "✓ чисто" : "⚠ "+found.length+" совпад.";
+  var list = $("c8list");
+  list.innerHTML = found.map(function(f){ return "<li>"+esc(f)+"</li>"; }).join("");
+
+  if(state.s2.client){
+    $("c6hint").textContent = "Начните текст с имени: «"+state.s2.client+"».";
+  }
+  if(state.s6.ask){
+    $("c7hint").textContent = "Последняя фраза должна быть похожа на: «"+state.s6.ask+"».";
+  } else {
+    $("c7hint").textContent = "Заполните конкретный запрос на слайде 6.";
+  }
+
+  var manualDone = [state.chk.c2,state.chk.c6,state.chk.c7,state.chk.c9,state.chk.c10].filter(Boolean).length;
+  var autoDone = (c1ok?1:0) + 1 /*c3 always*/ + (bridgesFilled?1:0) + (demoReady?1:0) + (c8ok?1:0);
+  var total = manualDone + autoDone;
+  $("sumChecklist").textContent = total+" / 10";
+}
+
+/* ---- overall progress ---- */
+function renderProgress(){
+  var items = [
+    state.s1.name, state.s1.one,
+    state.s2.client, state.s2.pain, state.s2.scale,
+    state.s3.demo, state.s3.net, state.s3.data, state.s3.backup,
+    state.s4.v1, state.s4.v2, state.s4.v3, state.s4.v4,
+    state.s5.quote, state.s5.change,
+    state.s6.h1t, state.s6.h2t, state.s6.h3t, state.s6.ask,
+    state.br.b1, state.br.b2, state.br.b3, state.br.b4,
+    state.pitch
+  ];
+  var filled = items.filter(function(v){ return v===true || (typeof v==="string" && v.trim()!==""); }).length;
+  var pct = Math.round(filled/items.length*100);
+  $("progressFill").style.width = pct+"%";
+  $("progressPct").textContent = pct+"%";
+}
+
+function renderAll(){
+  renderSlideMockups();
+  renderWordCount();
+  renderChecklist();
+  renderProgress();
+  save();
+}
+
+/* ---- print / copy / reset ---- */
+function printDeck(){
+  goToStep("summary");
+  setTimeout(function(){ window.print(); }, 60);
+}
+$("printBtn").addEventListener("click", printDeck);
+$("printTopBtn").addEventListener("click", printDeck);
+
+$("copyBtn").addEventListener("click", function(){
+  var text = state.pitch || "";
+  function fallback(){
+    var ta = $("pitchText");
+    ta.focus(); ta.select();
+    try{ document.execCommand("copy"); $("copyBtn").textContent="Скопировано"; }
+    catch(e){ $("copyBtn").textContent="Скопируйте вручную"; }
+    setTimeout(function(){ $("copyBtn").textContent="Скопировать текст питча"; },1800);
+  }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){
+      $("copyBtn").textContent="Скопировано";
+      setTimeout(function(){ $("copyBtn").textContent="Скопировать текст питча"; },1800);
+    }).catch(fallback);
+  } else { fallback(); }
+});
+
+$("resetBtn").addEventListener("click", function(){
+  if(confirm("Сбросить все поля тетради? Это нельзя отменить.")){
+    state = defaults();
+    try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+    document.querySelectorAll('input[type=text], textarea').forEach(function(el){ el.value=""; });
+    document.querySelectorAll('input[type=checkbox]').forEach(function(el){ el.checked=false; });
+    $("s6-h1l").value="Май"; $("s6-h2l").value="Октябрь"; $("s6-h3l").value="Видение";
+    state.s6.h1l="Май"; state.s6.h2l="Октябрь"; state.s6.h3l="Видение";
+    setPreviewTheme("dark");
+    goToStep("intro");
+    renderAll();
+  }
+});
+
+/* ---- init ---- */
+load();
+initBindings();
+setPreviewTheme(state.theme || "dark");
+goToStep(state.step && STEPS.indexOf(state.step)!==-1 ? state.step : "intro");
+renderAll();
+window.addEventListener("resize", function(){
+  checkOverflow("mock1-one","s1-warn");
+  checkOverflow("mock2-pain","s2-warn");
+  checkOverflow("mock5-quote","s5-warn");
+});
+})();
+</script>
+</body>
+</html>
